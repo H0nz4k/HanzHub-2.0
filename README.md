@@ -153,6 +153,10 @@ Tento repozitář je **zastřešující dokumentace, cílová architektura, inte
 
 Existující [HanzHub-Control](https://github.com/H0nz4k/HanzHub-Control) zůstává zdrojem historických rozhodnutí a implementací; případné převzetí či odstavení jeho částí vyžaduje inventuru a ověřenou náhradu.
 
+## Migrace na čistý OS a závazný standard
+
+V projektu platí [AGENTS.md](AGENTS.md) a [migrační plán](docs/MIGRATION.md): aplikace standardně pod `/opt/`, konfigurace odděleně od kódu, data zálohovaná a obnovitelná. Původní instalaci zachovat až do ověřené obnovy. **Uvažované formátování externího SSD je zatím blokováno**, dokud se neověří jeho fyzická identita, současný obsah a existence nezávislé kopie; dřívější zprávy uvádějí Patriot v režimu `ro,norecovery`.
+
 ## Stav projektu
 
 **Fáze: založení vize a inventury.** Tento README je cílové zadání, **nikoliv tvrzení, že uvedené komponenty už byly nasazeny**.
