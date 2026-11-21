@@ -114,6 +114,14 @@ class Dashboard(SimpleHTTPRequestHandler):
                 " || 'Zálohování vyžaduje pozornost. Zkontroluj stav výše.' : ''",
                 1,
             )
+            html = html.replace(
+                "const storage = data.storage || {};",
+                "const storage = data.storage || {};"
+                "if (typeof daily.size_bytes === 'number') "
+                "document.getElementById('backup-daily-integrity').textContent += "
+                "' · ' + (daily.size_bytes / 1073741824).toFixed(1) + ' GiB';",
+                1,
+            )
             self.send_content(html.encode(), "text/html; charset=utf-8")
             return
         elif path == "/living-glass/app.js":

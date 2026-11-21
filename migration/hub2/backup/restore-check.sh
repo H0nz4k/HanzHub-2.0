@@ -47,7 +47,7 @@ docker exec "$name" /bin/sh -ec '
   export INFLUX_TOKEN="$(head -c 48 /dev/urandom | base64 | tr -d "\n")"
   influx setup --username restore --password "$(head -c 24 /dev/urandom | base64)" \
       --org restore --bucket initial --token "$INFLUX_TOKEN" --force >/dev/null
-  influx restore /backup --bucket meteo --new-bucket hub2-restore-meteo --new-org restore
+  influx restore /backup --org vysilac_v3 --bucket meteo --new-bucket hub2-restore-meteo --new-org restore
   influx bucket list --org restore --name hub2-restore-meteo --json
 ' | python3 -c 'import json,sys; s=sys.stdin.read(); x=json.loads(s[s.index("["):]); assert any(v["name"]=="hub2-restore-meteo" for v in x); print("InfluxDB: Meteo restored into isolated container")'
 python3 - "$snapshot" <<'PY'
@@ -56,7 +56,7 @@ import sys
 from pathlib import Path
 path = Path("/var/lib/hanzhub-backup-status/daily.json")
 data = json.loads(path.read_text())
-if data.get("snapshot") != sys.argv[1][:8] or data.get("state") != "ok":
+if (data.get("snapshot") or "")[:8] != sys.argv[1][:8] or data.get("state") != "ok":
     raise SystemExit("Restored snapshot is not the latest recorded daily backup")
 data["restore_tested"] = True
 temp = path.with_suffix(".restore-tmp")

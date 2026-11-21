@@ -77,3 +77,16 @@ Dashboard adaptér. Pro odstavení automatizace zakaž oba timery,
 současný běh nech doběhnout. Klíče jsou pod `/etc/hanzhub-backup` s
 omezením na root. Uchovej jejich nezávislou kopii v zabezpečeném
 trezoru vlastníka pro případ ztráty původní SD.
+
+## Ověření na HUB2, 21. 11. 2026
+
+Snapshot `cbd96a8f` má 20 218 351 698 B logických dat. První úložiště
+na disku zabírá 3 276 013 568 B. Restic přečetl a ověřil všechny datové
+balíky. Výběrová obnova přečetla sedm tabulek CoinListu a 93 tabulek
+Grafany. U obou databází prošel `PRAGMA integrity_check`. Export
+InfluxDB obnovil bucket Meteo do dočasného kontejneru bez sítě.
+Systémový filesystem byl ověřen jako odmítnutý cíl zálohování.
+Týdenní úloha odmítla právě používanou systémovou SD a vyvolala
+stav chyby v Dashboardu a upozornění v žurnálu. Čtyři staré IMG
+zůstaly zachované. Nový obraz a jeho fyzický boot čekají na
+schválené recovery okno.
