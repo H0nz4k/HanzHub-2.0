@@ -88,3 +88,16 @@ jejich obsahu a uvolnění cílových cest.
 Stav tohoto postupu je `prepared`. Pro skutečný archiv zbývá soupis,
 privátní manifest s velikostmi a závislostmi, izolovaný test skutečných
 dat, kontrola režimu 7″ HDMI a aplikační ověření na cíli.
+
+## Záznam operací na HUB2
+
+- Příprava nástroje, testovacího souboru a tohoto postupu je v lokálním
+  commitu `7d8c294`. Syntetické testy nebyly v této relaci spuštěny.
+- Systém běží z microSD. Pro `/opt` bylo dostupných 22 GiB.
+  Migrační svazek byl připojen s `ro,norecovery`. Nadřazený adresář
+  archivu má režim `0700` a vlastní jej root. Pokus o jednorázový výpis
+  přes `sudo -n` skončil požadavkem na heslo. Obsah a kontrolní součet
+  archivu zůstávají neověřené.
+- Henk Studio ani Dashboard 2.0 nebyly obnoveny. Oba HDMI konektory
+  hlásily `disconnected` a žádný režim. Starý Operations Broker nebyl
+  spuštěn a systémová konfigurace se nezměnila.
