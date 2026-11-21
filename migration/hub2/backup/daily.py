@@ -198,6 +198,14 @@ def main():
         status(kind, state="failed", failed=int(time.time()))
         print(f"Backup failure: {unit}; see journal for the failing unit", file=sys.stderr)
         return
+    if action == "weekly":
+        try:
+            previous = json.loads((STATUS / "weekly.json").read_text())
+        except FileNotFoundError:
+            previous = {}
+        if previous.get("state") == "ok" and 0 <= time.time() - previous.get("last_success", 0) < 7 * 86400:
+            print("A verified offline image is already available for this week")
+            return
     status(action, state="running", started=int(time.time()), error=None)
     try:
         os.chdir(SSD)

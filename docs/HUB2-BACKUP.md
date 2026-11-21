@@ -36,20 +36,34 @@ a uložený export Meteo. [Dokumentace obnovy InfluxDB](https://docs.influxdata.
 
 ## Týdenní IMG
 
-Timer má okno každou neděli ve 04:00. Na běžícím HUB2 kontrola skončí
-stavem `offline_source_required`. Produkční root je ext4 přímo na SD.
-Export celé karty z živého systému nelze ověřit jako konzistentní
-a služba nevytváří zavádějící výsledek. Automaticky neodstavuje aplikace.
+Timer má okno každou neděli ve 04:00. Na živé SD bez nedávného
+ověřeného obrazu hlásí `offline_source_required`. Sám nikoho
+neodstavuje. Na Pi 5 je připravený jednorázový recovery start
+prostřednictvím firmware `tryboot`. K použití stačí jeden schválený
+start příkazem `sudo reboot '0 tryboot'`. Běžná konfigurace bootu i
+jádro zůstaly zachovány. Recovery initramfs pracuje v RAM před
+připojením root oddílu a po úspěchu nebo chybě přejde normálním
+rebootem zpět. Pokud by se firmware zasekl před startem recovery,
+po fyzickém resetu se použije běžná boot konfigurace. Export má
+časový limit tři hodiny plus nejvýše minutu na ukončení procesu.
+[Dokumentace Raspberry Pi k tryboot](https://www.raspberrypi.com/documentation/computers/config_txt.html)
 
-Pro skutečnou image nabootuj schválený oddělený recovery systém.
-Použij stejnou ověřenou SD jen jako zdroj, bez připojených oddílů
-a s blokovým přístupem pouze pro čtení. Na recovery systému
-zpřístupni zálohovací nástroje, Samsung SSD a klíč age. Úloha
-ověřuje tabulku oddílů, FAT a ext4, boot konfiguraci a PARTUUID,
-pak čte celý fyzický obraz, včetně tabulky oddílů. Šifrovaný
-`hub2.img.age` vzniká uvnitř adresáře `.partial`. Ověřuje se SHA-256
-nešifrovaného obsahu po dešifrování proti zdroji i SHA-256 ciphertextu.
-Teprve potom se atomicky zveřejní adresář nové generace.
+Recovery čeká na obě známá zařízení, přepne zdrojovou SD v jádře na
+read-only a připojí Samsung podle UUID. Klíč age přečte z root
+oddílu jen pro čtení do RAM. Root následně odpojí a provede
+kontroly filesystemu. Šifrovaný obraz celé karty, včetně tabulky
+oddílů, zapisuje pod `.partial`. Do dočasného šifrovaného úložiště
+na SSD obnoví image z ciphertextu, ověří velikost a SHA-256 vůči
+zdroji a připojí obnovenou image přes read-only loop. Ověří FAT,
+ext4, boot soubory a shodu PARTUUID rootu. Teprve potom zveřejní
+generaci s kontrolními součty. Po běžném startu systemd importuje
+durabilní výsledek ze Samsungu pro Dashboard.
+
+Předpoklad je alespoň dvojnásobek velikosti SD, 25 GiB rezervy a
+4 GiB na režii. Nástroje pro tvorbu alternativního initramfs a
+jeho kontrolu používá `sudo bash migration/hub2/backup/recovery/install.sh`.
+Spusť instalátor znovu po změně jádra nebo recovery modulu.
+Nepřepisuje běžné `config.txt` ani nezahajuje reboot.
 
 Obnovu nejprve proveď jako soubor do nezávislého zabezpečeného
 úložiště. Ověř SHA-256 ciphertextu, dešifruj image a ověř její
@@ -90,3 +104,13 @@ Týdenní úloha odmítla právě používanou systémovou SD a vyvolala
 stav chyby v Dashboardu a upozornění v žurnálu. Čtyři staré IMG
 zůstaly zachované. Nový obraz a jeho fyzický boot čekají na
 schválené recovery okno.
+
+### Stav následné přípravy recovery
+
+Na HUB2 je nainstalovaný alternativní initramfs a povolený import
+výsledku. V archivu jsou udev pravidla, modul FUSE a potřebné
+programy. Přístupové klíče v archivu nejsou. Ověřeno bylo čtení
+dešifrované kopie z dočasného šifrovaného FUSE přes read-only loop
+a plný read-only ověřovač oddílů na zachovaném starším IMG.
+Živý zdroj byl opět odmítnut. Start do recovery, nový IMG a jeho
+obnova na náhradní kartu čekají na schválený jednorázový reboot.

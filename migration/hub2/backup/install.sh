@@ -21,10 +21,12 @@ if not path.exists():
 PY
 test -s /etc/hanzhub-backup/age-identity ||
     age-keygen -o /etc/hanzhub-backup/age-identity 2>/dev/null
-install -m 644 "$package"/{daily.py,weekly.sh,restore-check.sh} /opt/hanzhub/backup/
+install -m 644 "$package"/{daily.py,weekly.sh,verify-image.sh,restore-check.sh} /opt/hanzhub/backup/
+install -m 644 "$package"/recovery/import-result.py /opt/hanzhub/backup/
 install -m 644 "$package"/backup_status.py "$package"/../dashboard-web.py /opt/hanzhub/hub2/
 install -m 644 "$package"/*.{mount,service,timer} /etc/systemd/system/
 systemctl daemon-reload
 systemd-analyze verify hanzhub-backup-{daily,weekly}.{service,timer}
 systemctl enable --now hanzhub-backup-daily.timer hanzhub-backup-weekly.timer
+systemctl enable hanzhub-backup-recovery-import.service
 systemctl restart hanzhub-dashboard2

@@ -1,0 +1,12 @@
+[Unit]
+Description=Import offline HUB2 backup result
+RequiresMountsFor=/mnt/hanzhub-backup
+Before=hanzhub-dashboard2.service
+
+[Service]
+Type=oneshot
+StateDirectory=hanzhub-backup-status
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/backup/import-result.py
+
+[Install]
+WantedBy=multi-user.target
