@@ -1,0 +1,17 @@
+[Unit]
+Description=HanzHub encrypted application and database backup
+Wants=docker.service
+After=docker.service
+RequiresMountsFor=/mnt/hanzhub-backup
+OnFailure=hanzhub-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+RuntimeDirectory=hanzhub-backup
+RuntimeDirectoryMode=0700
+StateDirectory=hanzhub-backup-status
+UMask=0077
+Nice=10
+IOSchedulingClass=idle
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/backup/daily.py daily
+TimeoutStartSec=8h

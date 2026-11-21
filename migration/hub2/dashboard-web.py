@@ -7,6 +7,15 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
+try:
+    from backup_status import backup_status
+except ModuleNotFoundError as error:
+    if error.name != "backup_status":
+        raise
+
+    def backup_status():
+        return {key: {"state": "unknown"} for key in ("daily", "weekly", "storage")}
+
 SERVICES = (
     ("henkstudio", "Henk Studio", 4002, "/#lab", "/studio-model.js", "iot"),
     ("meteo", "HanzMeteo", 5000, "/", "/api/current", "meteo"),
@@ -68,8 +77,7 @@ class Dashboard(SimpleHTTPRequestHandler):
             with ThreadPoolExecutor() as pool:
                 data = dict(pool.map(health, SERVICES))
         elif path == "/api/backup/status":
-            data = {"daily": {"state": "unknown"}, "weekly": {"state": "unknown"},
-                    "storage": {"state": "unknown"}}
+            data = backup_status()
         elif path in ("/api/calendar/status", "/api/calendar/calendars", "/api/calendar/events"):
             query = urlsplit(self.path).query
             try:
@@ -98,6 +106,12 @@ class Dashboard(SimpleHTTPRequestHandler):
             html = html.replace(
                 '<footer class="footer">',
                 '<footer class="footer"><a href="/living-glass/">Living Glass</a><span>·</span>',
+                1,
+            )
+            html = html.replace(
+                "warning ? 'Zálohování vyžaduje pozornost. Zkontroluj stav výše.' : ''",
+                "warning ? [daily.detail, image.detail].filter(Boolean).join(' · ')"
+                " || 'Zálohování vyžaduje pozornost. Zkontroluj stav výše.' : ''",
                 1,
             )
             self.send_content(html.encode(), "text/html; charset=utf-8")

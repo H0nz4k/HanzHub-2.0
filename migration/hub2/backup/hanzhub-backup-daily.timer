@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily HanzHub application backup
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

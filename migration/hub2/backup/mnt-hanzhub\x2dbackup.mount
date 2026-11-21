@@ -1,0 +1,9 @@
+[Unit]
+Description=Samsung SSD for HanzHub backups
+
+[Mount]
+What=/dev/disk/by-uuid/20fe1490-9a5e-dd01-00ce-14909a5edd01
+Where=/mnt/hanzhub-backup
+Type=ext4
+Options=rw,nosuid,nodev
+TimeoutSec=20

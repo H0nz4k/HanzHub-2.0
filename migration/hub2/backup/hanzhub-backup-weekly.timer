@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly HanzHub SD image backup window
+
+[Timer]
+OnCalendar=Sun *-*-* 04:00:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

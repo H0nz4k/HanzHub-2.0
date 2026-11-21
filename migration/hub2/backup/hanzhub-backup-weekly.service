@@ -1,0 +1,13 @@
+[Unit]
+Description=Verified HanzHub SD image backup (offline source required)
+RequiresMountsFor=/mnt/hanzhub-backup
+OnFailure=hanzhub-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+StateDirectory=hanzhub-backup-status
+UMask=0077
+Nice=10
+IOSchedulingClass=idle
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/backup/daily.py weekly
+TimeoutStartSec=8h

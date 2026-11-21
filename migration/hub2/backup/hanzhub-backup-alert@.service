@@ -1,0 +1,8 @@
+[Unit]
+Description=Record HanzHub backup failure for %i
+
+[Service]
+Type=oneshot
+StateDirectory=hanzhub-backup-status
+UMask=0077
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/backup/daily.py alert %i
