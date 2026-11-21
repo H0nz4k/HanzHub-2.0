@@ -1,0 +1,25 @@
+[Unit]
+Description=REDcheck local Redmine overview
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/hanzhub/redcheck
+StateDirectory=hanzhub/redcheck
+StateDirectoryMode=0700
+Environment=REDMINE_DB=/var/lib/hanzhub/redcheck/data.sqlite3
+Environment=REDMINE_REPORT_DIR=/var/lib/hanzhub/redcheck/reports
+Environment=CUSTOMERS_FILE=/var/lib/hanzhub/redcheck/customers.json
+Environment=PORT=4091
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/redcheck/redmine.py
+Restart=on-failure
+RestartSec=10s
+UMask=0077
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+[Install]
+WantedBy=multi-user.target

@@ -42,3 +42,33 @@ přes localhost. Grafana odpověděla uvnitř kontejneru.
   zápisů. Nasazení UI přidalo účtu služby čtecí ACL na oba obnovené stromy.
 - Restart hostitele nebyl součástí ověření. Starý Operations Broker se
   nespouštěl. Nebyl proveden žádný test přepínání fyzického GPIO nebo relé.
+
+## Issue #5 — živé kontroly po výchozím rebootu
+
+Stav 21. 11. 2026. Dashboard je dostupný na loopbacku a nepoužívá starý
+Operations Broker. Původní stromy Dashboardu a Studia zůstaly na disku.
+Kontrola dostupnosti měří odpověď vybraného endpointu.
+
+| Aplikace | Provoz | Funkce ověřená na HUB2 | Omezení / další krok |
+| --- | --- | --- | --- |
+| Dashboard 2.0 | loopback :4001 | Chromium při 1024 × 600 zobrazil 11/11 služeb. Všech 11 cílových URL odpovědělo, včetně místního Kalendáře a REDcheck. IoT vrací lokální odkaz zpět. | HanzRadio odkazuje na JSON presetů. Stav záloh zůstává neznámý. Living Glass obsahuje ukázkové pohledy. |
+| HDMI kiosk | Cage + Chromium, jednotka active a enabled | Po restartu jednotky má HDMI-A-1 aktivní CRTC s obrazem 1024 × 600. | Plný reboot po instalaci kiosku a vizuální kontrola fyzického panelu neprovedeny. |
+| Henk Studio | loopback :4002 | Playwright otevřel Studio z Dashboardu, upravil reakci, spustil náhled, ověřil JSON export a název projektu po obnovení stránky. Test měl izolovaný profil. | Původní projekty v jiném originu vyžadují export/import. Fyzický blesk netestován. |
+| Meteo / InfluxDB | web a BLE přijímač běží | API aktuálních hodnot a historie odpovídají, obě vracejí prázdný objekt. Bluetooth je zapnutý, přijímač opakovaně nenajde zařízení. | Zpřístupnit BLE vysílač a doložit první měření v grafu. |
+| IoT / infrapanel | loopback :4011, plánovač vypnutý | Stav eWeLink hlásí nenakonfigurovaný účet, seznam modulů je prázdný. Čtecí Tuya dotaz na dochované zařízení vrátil chybu 914 bez datových bodů. | Ověřit dostupnost měřidla, jeho kumulativní kWh a skutečný tarif Kč/kWh. |
+| Grafana | kontejner, health DB ok | SQLite otevřená v režimu pouze pro čtení potvrdila 0 zdrojů a 0 dashboardů. Administrátorský API dotaz dostal 401. | Potřebný platný přístup pro přidání zdroje a grafů. |
+| Kalendář / REDcheck | místní weby odpovídají | Dashboard předává čtecí stav Kalendáře. REDcheck vrací přehled a verzi. | Kalendář hlásí nenastavený účet. REDcheck nemá konfiguraci ani úspěšnou synchronizaci. |
+| Whiteboard / rádio / LoRa | místní data a API | Whiteboard vrací 12 existujících událostí. Rádio vrací 4 presety. LoRa vrací odpověď uzlů. | Kamera, SDR příjem a rádiový přenos neověřeny. Nalezené ttyUSB porty patřily modemu. |
+| CoinList / Stream / PredicApp | cílové stránky dostupné | Navazují na dřívější ověření dat a místního enkódování. | Zápis, vzdálené vysílání a plánovaná aktualizace zůstávají bez nového testu. |
+
+Nové soubory pro nasazení jsou v `migration/hub2`. Na HUB2 se použily
+balíčky Debian/Raspberry Pi `cage` a `chromium`, server
+`dashboard-web.py` v `/opt/hanzhub/hub2/` a dvojice drop-inů
+`local.conf` pro `hanzhub-dashboard2.service` a `hanzhub-iot.service`.
+Grafický profil je v `/var/lib/hanzhub/kiosk`. Jednotka kiosku používá
+`tty1` a při startu čeká na lokální Dashboard. Pro návrat vypni kiosk
+příkazem `systemctl disable --now hanzhub-kiosk` a spusť
+`systemctl start getty@tty1`. Pro návrat Dashboardu a IoT odeber pouze
+jejich nově přidané drop-iny `local.conf`, načti jednotky příkazem
+`systemctl daemon-reload` a restartuj tyto dvě služby. Zachovej data
+a uživatelský profil kiosku.

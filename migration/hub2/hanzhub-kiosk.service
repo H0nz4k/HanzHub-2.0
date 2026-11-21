@@ -1,0 +1,25 @@
+[Unit]
+Description=HanzHub Dashboard HDMI kiosk
+After=systemd-user-sessions.service hanzhub-dashboard2.service
+Wants=hanzhub-dashboard2.service
+Conflicts=getty@tty1.service
+After=getty@tty1.service
+
+[Service]
+User=hanz
+PAMName=login
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+TTYReset=yes
+TTYVHangup=yes
+StateDirectory=hanzhub/kiosk
+Environment=XDG_CONFIG_HOME=/var/lib/hanzhub/kiosk/config
+Environment=XDG_CACHE_HOME=/var/lib/hanzhub/kiosk/cache
+ExecStartPre=/usr/bin/curl --fail --silent --show-error --retry 5 --retry-connrefused --max-time 2 --output /dev/null http://127.0.0.1:4001/
+ExecStart=/usr/bin/cage -s -- /usr/bin/chromium --ozone-platform=wayland --no-first-run --disable-session-crashed-bubble --kiosk --user-data-dir=/var/lib/hanzhub/kiosk/chromium http://127.0.0.1:4001/
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
