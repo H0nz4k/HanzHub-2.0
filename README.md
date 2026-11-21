@@ -45,8 +45,8 @@ Při přechodu na HanzHub 2.0 **zachovat existující vizuální identitu Henka*
 Majitel žádá **skutečné nasazení dříve vytvořeného grafického návrhu Dashboardu 2.0 a jeho odpovídajícího vzhledu na LCD**, k němuž dosud nedošlo. Jde o prioritu pro první viditelný výsledek HanzHubu 2.0, ne o zadání nového redesignu.
 
 - Dohledat již existující návrhy, větve, PR, vizuální assety a design systém Dashboard v2, InfoLCD a Henka; vybrat konkrétní ověřenou výchozí revizi. Nevytvářet grafiku od nuly.
-- Před změnou zachytit živý stav, velikost/rozlišení a driver displejů (3,5″ ILI9486 a 7″ HDMI), kiosk, konfiguraci InfoLCD, GPIO22 a závislosti; oddělit vzhled od hardwarového chování.
-- Vytvořit kompaktní, čitelnou variantu jednotného designu pro web Dashboard a pro každý fyzický LCD podle jeho možností. **Neznamená to běh stejné webové stránky na každém displeji.**
+- Před změnou zachytit živý stav 7″ HDMI displeje, kiosku, konfigurace a závislostí. **3,5″ ILI9486 InfoLCD je vyřazen z rozsahu migrace a nového grafického nasazení**; nic na něm nemaž ani fyzicky nevypínej bez samostatného zadání.
+- Vytvořit čitelnou variantu jednotného designu pro web Dashboard a **7″ HDMI displej** podle jeho možností. **Neznamená to běh stejné webové stránky na každém displeji.**
 - Zachovat stávající stránky aplikací, meteo, IoT, ovládání relé, navigaci, Henkovy grafické stavy a dostupné provozní funkce. Henk na hlavním Dashboardu pouze kompaktně; plné UI odděleně.
 - Nasadit po explicitním schválení rizikových produkčních změn se zálohou a rollbackem. Ověřit skutečný vzhled, čitelnost, chování a restart/power-on přímo na displejích, ne jen screenshot v CI.
 - Rozlišovat **design připravený**, **aplikace nasazená** a **fyzický displej ověřený**. Bez posledního nelze prohlásit hotovo.
