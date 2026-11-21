@@ -1,0 +1,22 @@
+[Unit]
+Description=CoinList
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/Coin
+StateDirectory=hanzhub/coinlist
+StateDirectoryMode=0750
+Environment=COINLIST_DATA=/var/lib/hanzhub/coinlist
+Environment=COINLIST_DB=/var/lib/hanzhub/coinlist/kartoteka.sqlite
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/Coin/.venv/bin/python -m flask --app app run --host 127.0.0.1 --port 5001
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

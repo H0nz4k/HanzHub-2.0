@@ -1,0 +1,23 @@
+[Unit]
+Description=PredicApp local web interface
+
+[Service]
+User=hanz
+WorkingDirectory=/var/lib/hanzhub/predicapp
+StateDirectory=hanzhub/predicapp
+StateDirectoryMode=0750
+Environment=PREDICTAPP_TEST_MODE=1
+IPAddressDeny=any
+IPAddressAllow=localhost
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/PredicApp/venv/bin/python -m flask --app /opt/PredicApp/app.py run --host 127.0.0.1 --port 8084
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

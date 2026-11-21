@@ -1,0 +1,23 @@
+[Unit]
+Description=HanzRadio local web and API
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/Radioama
+StateDirectory=hanzhub/radio
+StateDirectoryMode=0750
+Environment=HANZRADIO_PORT=4014
+Environment=HANZRADIO_DB_PATH=/var/lib/hanzhub/radio/hanzradio.sqlite
+Environment=HANZRADIO_LOCK_PATH=/var/lib/hanzhub/radio/rtl0.lock
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/Radioama/.venv/bin/python -m hanzradio.main
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

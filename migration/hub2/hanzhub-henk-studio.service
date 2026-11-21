@@ -1,0 +1,18 @@
+[Unit]
+Description=Henk Studio
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/henk-studio
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -m http.server 4002 --bind 127.0.0.1
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

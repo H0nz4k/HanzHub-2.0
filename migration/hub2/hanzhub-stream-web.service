@@ -1,0 +1,18 @@
+[Unit]
+Description=Stream web interface
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/stream_server
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/stream_server/venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8088
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

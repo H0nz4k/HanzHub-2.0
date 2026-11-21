@@ -1,0 +1,21 @@
+[Unit]
+Description=Meteo dashboard
+After=docker.service
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/HanzMeteo
+LoadCredential=meteo.json:/etc/hanzhub/meteo/config.json
+Environment=METEO_CONFIG=%d/meteo.json
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/HanzMeteo/venv/bin/python -m flask --app app run --host 127.0.0.1 --port 5000
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
