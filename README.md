@@ -78,6 +78,20 @@ Prvním technickým výstupem bude **read-only inventář aktuálního hostitele
 
 Neznámé služby se **nepřiřazují odhadem**. Inventář nesmí veřejně vystavovat interní adresy, tokeny, hesla, soukromé cesty ani citlivá provozní data.
 
+## Centralizovaná správa GPIO — GPIO Check
+
+**Jedno místo pro evidenci, kontrolu a řízené přidělování GPIO pinů napříč všemi aplikacemi a moduly HanzHubu.** Každý pin má jednoznačně známé využití, vlastníka a stav. Žádná aplikace nesmí potichu přepsat konfiguraci jiné aplikace.
+
+- Inventarizace skutečného stavu Raspberry Pi: SoC GPIO (BCM), fyzické piny headeru, GPIO chip/line, funkce ALT, rezervace kernelu i pinů periferií (I²C/SPI/UART), systémové konfigurace, běžící procesy a hardware.
+- Společný katalog: pin, označení BCM/fyzické číslo, směr, pull, active-low, výchozí bezpečný stav, vlastník (app/služba), účel, stav obsazení, konflikt, odkaz na konfiguraci, čas posledního ověření a zdroj informace.
+- Přehled v Dashboardu: **volné / obsazené / rezervované / konflikt / neznámé**. Změny pouze přes ověřený plán, s upozorněním na konflikty a potvrzením rizikových zásahů.
+- Jednotný deklarativní manifest požadavků aplikací; při nasazení preflight kontroly, aby dvě aplikace současně nekonfigurovaly stejnou linku. Ovládání a exkluzivní runtime vlastnictví navázat na existující Linux GPIO rozhraní (libgpiod / gpiochip), nikoliv stavět vlastní kernelový GPIO driver.
+- Změna GPIO je **transakční a auditovaná**: záloha, validace, schválení při riziku, bezpečný výchozí stav, restart pouze dotčené služby a rollback. Zakázat bezmyšlenkovité přepínání pinů na živém hardwaru.
+- Existující konfigurace, zejména **GPIO22 (aktivní LOW, Henk/InfoLCD relé)**, nejprve zdokumentovat a chránit proti kolizi. Vyřazení 3,5″ displeje z redesignu **neopravňuje odstranit** jeho stávající GPIO konfiguraci bez samostatného rozhodnutí.
+- Read-only inventář musí fungovat i bez Henka. Henk získá přes stejné API informaci „Která služba používá GPIO22?“ a může připravit návrh změny, nikoliv neautorizovaně fyzicky spínat relé.
+
+**Hotovo:** ověřená mapa všech GPIO uživatelů na skutečném HUBu, detekce konfliktů napříč dvěma nezávislými aplikacemi, jednotné čitelné UI/API a bezpečně ověřená plánovaná změna bez porušení ostatních komponent.
+
 ## Správa: hotové nástroje před vlastním frameworkem
 
 Uvažované nástroje (zatím **kandidáti, nikoliv zvolená nebo nasazená architektura**): Cockpit pro administraci Linuxu; Ansible a Semaphore UI pro opakovatelné operace; případně jiné osvědčené řešení. OpenJarvis lze nezávisle vyhodnotit jako lokální AI vrstvu.
