@@ -4,7 +4,9 @@ Description=Whiteboard Hub web interface
 [Service]
 User=hanz
 WorkingDirectory=/opt/whiteboard-hub
-Environment=WHITEBOARD_HUB_CONFIG=/opt/whiteboard-hub/config.yaml
+Environment=WHITEBOARD_HUB_CONFIG=/etc/hanzhub/whiteboard/config.json
+StateDirectory=hanzhub/whiteboard
+StateDirectoryMode=0750
 Environment=PYTHONDONTWRITEBYTECODE=1
 ExecStart=/opt/whiteboard-hub/venv/bin/python -m flask --app app run --host 127.0.0.1 --port 8099
 Restart=on-failure
