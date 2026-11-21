@@ -1,0 +1,33 @@
+[Unit]
+Description=HanzHub InfoLCD native HDMI panel
+After=getty@tty1.service hanzhub-kiosk.service hanzhub-dashboard2.service
+Conflicts=getty@tty1.service hanzhub-kiosk.service
+Wants=hanzhub-dashboard2.service
+
+[Service]
+User=hanz
+SupplementaryGroups=input video
+WorkingDirectory=/opt/hanzhub/infopanel
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+TTYReset=yes
+TTYVHangup=yes
+StateDirectory=hanzhub/infolcd
+StateDirectoryMode=0700
+ExecStart=/usr/bin/python3 -Bu /opt/hanzhub/infopanel/hdmi.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+DevicePolicy=closed
+DeviceAllow=/dev/tty1 rw
+DeviceAllow=/dev/fb0 rw
+DeviceAllow=char-input r
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+{
+  "fb": "/dev/fb0",
+  "layout": "landscape",
+  "rotate": 0,
+  "touch": "/dev/input/by-id/usb-WaveShare_WS170120-event-if00",
+  "meteo_csv": "/var/lib/hanzhub/meteo-receiver/meteo_log.csv",
+  "health_api": "http://127.0.0.1:4001/api/health",
+  "api": "http://127.0.0.1:4011/api/iot",
+  "data_dir": "/var/lib/hanzhub/infolcd",
+  "home_tiles": ["meteo", "heater", "plug", "radio", "calendar", "bot"],
+  "backlight_gpio": null,
+  "haptic_gpio": null,
+  "henk_lightning_relay_gpio": null
+}

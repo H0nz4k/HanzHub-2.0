@@ -111,3 +111,44 @@ zůstala během změny spuštěná. Grafana má původní restart policy
 `unless-stopped`. Pro návrat vyjmi přidaný Compose override a přepočítej
 pouze službu Grafana stejným příkazem. Grafana si vytvořená nastavení
 uchovává v původním datovém svazku.
+
+## Fyzický výstup 7″ HDMI — nativní InfoLCD
+
+Na HUB2 je na `tty1` nasazen původní široký renderer InfoLCD 2.12.0
+ze soukromého repozitáře InfoLcd, revize
+`36bc7a1d04bc2d47ac0d91bc3c1ef8c59b4d0a01`. Soukromý zdroj se do
+tohoto repozitáře nekopíruje. Nasazené soubory a dvě původní fotografie
+Studio ohně ověřuje `migration/hub2/infolcd/source.sha256`.
+Obě původní cesty chyběly na obnoveném systému, dochovaly se v seznamu
+souborů nepřipojeného archivu. Použitý renderer je nativní Pillow a
+RGB565. Webová ukázka a Dashboard nejsou zdrojem obrazu na HDMI.
+
+Na panelu jsou původní dlaždice Meteo, Infrapanel, Zásuvka, Rádio,
+Kalendář a Henk. Hlavička HanzHub otevírá systém a služby, v detailu
+vrací na dlaždice. Lokální přizpůsobení nechává původní kresbu a
+detaily a zpřístupní dlaždici Henk i tehdy, když chybí jeho živý feed.
+Živé jsou systémové metriky, dostupnost 12 služeb, stav IoT a připojení
+Kalendáře. Meteo používá CSV aktuálního přijímače HUB2. Chybějící vzorky,
+externí účty, rádio a Henkův feed mají stav nedostupnosti. Dlaždice
+otevírají nativní detaily, webové odkazy na aplikace zůstávají v Dashboardu.
+
+HUB2 identifikoval Waveshare WS170120 s absolutní plochou 1024 × 600.
+První spuštění založí lineární kalibraci pouze pro tento typ a rozsah.
+Původní dotykový dekodér s uloženou kalibrací prošel sedmi přechody
+do detailu a zpět se simulovanou sekvencí událostí. Fyzický dotyk prstem
+nebyl ověřen. Výstup z `/dev/fb0` byl zachycen jako RGB565 snímek.
+DRM potvrdil stejnou plochu framebufferové konzole na HDMI-A-1 při
+1024 × 600 / 60 Hz. Grafická animace Henka vyvolaná signálem SIGUSR2
+změnila desítky tisíc pixelů mimo hlavičku. GPIO, relé, haptika a
+síťové povely jsou pro tuto jednotku zakázané.
+
+Balíčky závislostí jsou `python3-pil`, `python3-evdev` a
+`python3-psutil`. Pro instalaci připrav soubory z uvedené revize,
+do `lcd/studio-effects-assets/` vlož původní Studio soubory
+`fire-bands.jpg` a `fire-banner.jpg` a spusť jako root
+`bash migration/hub2/infolcd/install.sh STAGED_INFOLCD_TREE`.
+Potom vypni původní `hanzhub-kiosk` a povol/spusť
+`hanzhub-infolcd-hdmi`. Na HUB2 bylo ověřeno vykreslení po restartu
+jednotky a její povolení při startu. Celý hostitel nebyl znovu rebootován.
+Pro návrat zastav a zakaž `hanzhub-infolcd-hdmi` a povol/spusť
+`hanzhub-kiosk`. Webové služby a datové adresáře zůstávají zachovány.

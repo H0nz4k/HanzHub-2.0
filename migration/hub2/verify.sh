@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-units=(app-m appmeteo hanzhub-{calendar,coinlist,dashboard2,henk-studio,iot,kiosk,lora-web,predicapp,radio,redcheck,stream-web,whiteboard})
+units=(app-m appmeteo hanzhub-{calendar,coinlist,dashboard2,henk-studio,iot,infolcd-hdmi,lora-web,predicapp,radio,redcheck,stream-web,whiteboard})
 for unit in "${units[@]}"; do
     systemctl is-active --quiet "$unit"
     systemctl is-enabled --quiet "$unit"
