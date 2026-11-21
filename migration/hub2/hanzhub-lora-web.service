@@ -1,0 +1,19 @@
+[Unit]
+Description=LoRa web interface
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/lora2
+Environment=LORA_WEB_HOST=127.0.0.1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /opt/lora2/lora_web.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
