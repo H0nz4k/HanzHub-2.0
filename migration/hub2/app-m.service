@@ -1,0 +1,27 @@
+[Unit]
+Description=Meteo BLE receiver
+After=docker.service bluetooth.service
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/meteo3/receiver
+StateDirectory=hanzhub/meteo-receiver
+StateDirectoryMode=0750
+LoadCredential=influx_token:/opt/meteo3/secrets/influx_token
+Environment=INFLUX_TOKEN_FILE=%d/influx_token
+Environment=PYTHONPATH=/opt/meteo3/receiver/venv/lib/python3.13/site-packages
+Environment=PYTHONUNBUFFERED=1
+Environment=METEO_LOG_FILE=/var/lib/hanzhub/meteo-receiver/meteo_log.csv
+Environment=BLE_STATUS_FILE=/var/lib/hanzhub/meteo-receiver/ble_status.json
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /opt/meteo3/receiver/ble_receiver.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
