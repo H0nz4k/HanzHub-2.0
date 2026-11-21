@@ -152,3 +152,24 @@ Potom vypni původní `hanzhub-kiosk` a povol/spusť
 jednotky a její povolení při startu. Celý hostitel nebyl znovu rebootován.
 Pro návrat zastav a zakaž `hanzhub-infolcd-hdmi` a povol/spusť
 `hanzhub-kiosk`. Webové služby a datové adresáře zůstávají zachovány.
+
+### Rozložení 4 × 3 a přepínač HDMI
+
+Aktualizace přebírá geometrii mřížky a povrch dlaždice HENK z revize
+InfoLcd `92d25df50b76b55e2c53597d06710471a44c6f8a` a původní přepínač
+ON/OFF z revize `108763e58965a6f2f2e27daa20bab67eb155d6d8`.
+Kapacita stránky je 12 i pro animované pozice a šipky navigace.
+Šest dosud nepřiřazených pozic zůstává volných. U dlaždice HENK jsou
+původní avatar, animace a stav ve zmenšené ploše. Přepínač je při
+nedostupném Presence API neaktivní. Dotykové akce s GPIO zůstávají
+vypnuté. Styl a funkce detailů jednotlivých modulů zůstávají stejné.
+
+Příkaz pro aktualizaci nově přijímá vedle původního připraveného stromu
+druhý argument `VISUAL_REFERENCES`. Ten obsahuje soukromé originály
+`lcd/infopanel_henk_task.py` jako `grid.py` a
+`lcd/infopanel_studio.py` jako `henk.py` z první revize.
+Z druhé revize použij `lcd/infopanel_landscape.py` jako
+`presence.py`. Instalátor ověří kontrolní součty obou vstupů,
+aplikuje vizuální změny do dočasného stromu a zkontroluje syntaxi
+před kopírováním do runtime. Příkaz pro kontrolu sestaveného stromu
+je `python3 -B migration/hub2/infolcd/check-visual.py STAGED_LCD_DIRECTORY`.
