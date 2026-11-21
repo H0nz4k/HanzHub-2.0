@@ -19,6 +19,7 @@ SERVICES = (
     ("whiteboard", "Whiteboard", 8099, "/", "/api/events/count", "whiteboard"),
     ("predictai", "PredicApp", 8084, "/", "/api/system_health", "learning"),
     ("redcheck", "REDcheck", 4091, "/", "/api/version", "learning"),
+    ("grafana", "Grafana · Meteo", 3000, "/d/hub2-meteo", "/api/health", "meteo"),
 )
 
 

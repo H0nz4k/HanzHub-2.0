@@ -72,3 +72,42 @@ příkazem `systemctl disable --now hanzhub-kiosk` a spusť
 jejich nově přidané drop-iny `local.conf`, načti jednotky příkazem
 `systemctl daemon-reload` a restartuj tyto dvě služby. Zachovej data
 a uživatelský profil kiosku.
+
+## P0 — nové zdroje dat
+
+- Grafana na loopbacku používá stávající Compose projekt. Přibyl dashboard
+  `hub2-meteo` se čtyřmi panely a datový zdroj `hub2-meteo-influx`.
+  Zabezpečený Influx credential posloužil k vydání samostatného tokenu
+  omezeného na čtení bucketu Meteo. Grafana uložila zdroj i dashboard.
+  Dotazy všech panelů proti živé InfluxDB vracejí HTTP 200 bez řádků.
+  Dotaz stejným tokenem do jiného bucketu byl odmítnut. Karta Dashboardu
+  vede na přihlášení Grafany se zpětným odkazem na Meteo dashboard.
+- IoT na portu 4011 nemá konfiguraci eWeLink ani moduly. Migrační úložiště
+  není dostupné. Dochované Tuya záznamy mají shodnou identitu, ale jejich
+  název nepotvrzuje „Zás. infra“. Uložený LAN endpoint přijímá TCP, avšak
+  čtecí stav s oběma dochovanými klíči a evidovanou verzí 3.4 vrací 914.
+  Tuya Cloud vydá token, ale čtení stavu odmítne kódem 28841002 kvůli
+  vypršelé službě. Chybí potvrzená identita a skutečná energetická
+  telemetrie. Sběr, grafy energie a výpočet Kč se zatím nenasazovaly.
+- BLE přijímač skenuje bez chyb. V 180 po sobě jdoucích pokusech nenašel
+  očekávaný vysílač. Samostatný sken viděl čtyři jiné inzerenty a žádné
+  odpovídající jméno ani servisní UUID. API na portu 5000 nemá aktuální
+  data ani historii. Starší historie se neimportovala.
+- REDcheck potřebuje platný API klíč pro stávající zdroj. Lokální API
+  hlásí prázdný přehled bez úspěšné synchronizace. Kalendář potřebuje
+  původního OAuth klienta. Po jeho bezpečném obnovení stačí v Kalendáři
+  potvrdit přístup k účtu Google, pokud původní token chybí nebo vypršel.
+
+### Nasazení grafů Meteo
+
+Z adresáře `migration/hub2/grafana` nainstaluj `dashboards.yml` a
+`meteo.json` do `/etc/hanzhub/grafana` a spusť `provision-token.py`
+jako root. Skript znovu používá pouze aktivní token se stejným účelem a
+ověřeným rozsahem. Výsledný soubor `datasource.yml` patří výhradně na HUB2.
+Nainstaluj `compose.override.yml` jako `docker-compose.override.yml`
+do stávajícího adresáře projektu a aplikuj změnu příkazem
+`docker compose up -d --no-deps --pull never grafana`. Původní InfluxDB
+zůstala během změny spuštěná. Grafana má původní restart policy
+`unless-stopped`. Pro návrat vyjmi přidaný Compose override a přepočítej
+pouze službu Grafana stejným příkazem. Grafana si vytvořená nastavení
+uchovává v původním datovém svazku.
