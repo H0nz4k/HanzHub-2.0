@@ -95,3 +95,9 @@ Příkaz `python3 -B migration/export-public.py MOUNT UUID` použije výběr nep
 3. Příjemce v izolovaném prostředí s vlastním klíčem dešifruje testovací zprávu a poté ověří a obnoví reálné zálohy. Citlivé mezisoubory patří do privátního RAM nebo šifrovaného pracovního prostoru s dostatečnou kapacitou.
 
 Pro InfluxDB je potřeba oprávnění pro plný `influx backup`. Pro SQLite aplikace se nejprve potvrdí skutečné otevřené databáze a použije online backup. Docker svazky vyžadují omezený přístup podle konkrétní služby. DB REDchecku vyžaduje zjištění, která data vlastní lokální aplikace a která spravuje případný vzdálený Redmine. Dalším předpokladem čisté instalace zůstává nezávislá kopie potřebných dat, test importu a test na odděleném systému.
+
+### Výsledek ověření na HUBu
+
+Dne 21. 11. 2026 vznikl na ext4 SSD dílčí balík pod `/mnt/hanzhub-migration/hanzhub-20261121T034506046932Z`. Celková velikost adresáře byla 386 233 939 B. Kontrola SHA-256 a shody soupisu se soubory prošla. `restore.sh --all` rozbalil všech sedm záznamů do privátního stagingu na tmpfs. Test ověřil čtyři konfigurační hashe Docker obrazů a všechny hashe jejich nekomprimovaných vrstev, zpracoval 41 grafických souborů včetně všech snímků animací a ověřil přesun stagingu pomocí rollbacku. Tento staging neobsahoval produkční databáze a služby z něj nebyly spuštěny.
+
+Produkční kontejnery i kontrolované služby po exportu stále běžely. Seznam neúspěšných systemd jednotek byl stejný jako před kontrolou balíku. Dílčí artefakty jsou `exported` a `verified` v rozsahu uvedeném výše. Úplná obnova aplikací zůstává otevřená.
