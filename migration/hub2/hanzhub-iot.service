@@ -1,0 +1,23 @@
+[Unit]
+Description=IoT local web and API
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/hanzhub/hub2
+StateDirectory=hanzhub/iot
+StateDirectoryMode=0750
+IPAddressDeny=any
+IPAddressAllow=localhost
+Environment=HANZHUB_IOT_DATA_DIR=/var/lib/hanzhub/iot
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/hanzhub/iot-venv/bin/python /opt/hanzhub/hub2/iot-web.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

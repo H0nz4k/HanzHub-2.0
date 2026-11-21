@@ -1,0 +1,24 @@
+[Unit]
+Description=Calendar local HTTP and HTTPS API
+
+[Service]
+User=hanz
+WorkingDirectory=/opt/hanzhub/hub2
+StateDirectory=hanzhub/calendar
+StateDirectoryMode=0750
+IPAddressDeny=any
+IPAddressAllow=localhost
+LoadCredential=server.crt:/etc/hanzhub/calendar/server.crt
+LoadCredential=server.key:/etc/hanzhub/calendar/server.key
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /opt/hanzhub/hub2/calendar-web.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
