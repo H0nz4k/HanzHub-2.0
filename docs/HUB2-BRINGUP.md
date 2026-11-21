@@ -16,7 +16,7 @@ přes localhost. Grafana odpověděla uvnitř kontejneru.
 | CoinList | Soubory obnoveny, lokální web běží nad kopií dat | 5001 | Index HTTP 200 a SQLite integrity check | Zápis a vzdálené závislosti dosud neověřeny. |
 | LoRa | Soubory obnoveny, lokální web běží | 8085 | `/version` a `/nodes` HTTP 200 | Příjem a vysílání. V systému se neobjevil identifikovaný LoRa adaptér. |
 | HanzRadio | Soubory obnoveny, lokální API běží nad kopií dat | 4014 | `/health` a `/api/v1/presets` HTTP 200, SQLite integrity check | USB SDR nepřítomen, příjem a OpenWebRX neověřeny. Port 4014 zachovává 4012 pro Calendar. |
-| Stream | Soubory obnoveny, lokální web běží | 8088 | `/status` HTTP 200 | Stream worker a koncové vysílání. |
+| Stream | Soubory obnoveny, lokální web běží | 8088 | `/status` HTTP 200 a syntetický vstup převedený původním workerem na místní H.264/FLV | Ve složce videos nejsou soubory. Koncové vysílání neověřeno. |
 | Whiteboard | Soubory obnoveny, lokální web běží nad kopií dat | 8099 | `/api/events/count` HTTP 200 a 12 zachovaných událostí | Kamera a příjem nových událostí. Odesílání SMS je vypnuté. |
 | Calendar | Soubory obnoveny, lokální HTTP a HTTPS běží | 4012, 4013 | `/api/calendar/status` HTTP 200 na obou portech | Původní OAuth konfigurace a stav účtu chybí. Lokální certifikát je vlastní. |
 | PredicApp | Soubory obnoveny, lokální web běží nad kopií dat | 8084 | `/api/system_health` HTTP 200, SQLite quick check, načtené predikce | Plánovač je vypnutý. Prázdný model zlata v2 obsloužil existující fallback v1. |
@@ -34,6 +34,8 @@ přes localhost. Grafana odpověděla uvnitř kontejneru.
   PredicApp vznikly SQLite kopie přes SQLite backup API. Whiteboard
   převzal kopii souborových událostí. CSV přijímače Meteo začíná v novém
   adresáři bez staré historie. Zdrojová data zůstala dostupná v `/opt`.
+- Stream používá balíček FFmpeg z Debianu pro Raspberry Pi. Test původního
+  workeru měl vlastní dočasnou konfiguraci a výstup do místního souboru.
 - Běh a povolení při startu lze ověřit skriptem `migration/hub2/verify.sh`.
   Jednotlivou novou službu lze vrátit pomocí `systemctl disable --now
   JMÉNO.service`. Zachovej datovou kopii pro případné sloučení následných
