@@ -32,6 +32,10 @@ HanzHub je centrální místo pro vlastní SW/HW projekty: aplikace, senzory, au
 
 Hlavní obrazovka nabízí rozcestník aplikací, zdraví systému, historii měření, grafy, provozní stavy a upozornění. Henk má **malou stavovou dlaždici** a vlastní oddělené rozhraní. Schvalovací a bezpečnostní obrazovky nemají dominovat úvodnímu dashboardu.
 
+### Zachovat grafickou identitu Henka
+
+Při přechodu na HanzHub 2.0 **zachovat existující vizuální identitu Henka**: plamen/avatar, animace a stavy (idle, práce, chyba, úspěch), dosavadní assety, Henk Studio a ověřené varianty zobrazení na Dashboardu a InfoLCD. Neprovádět redesign ani mazání grafických souborů bez samostatného rozhodnutí vlastníka. Henk má mít na hlavním Dashboardu pouze kompaktní stavovou dlaždici; plná grafika, animace a administrace patří do jeho samostatného rozhraní. Před migrací inventarizovat a archivovat původní soubory a ověřit, že nové UI používá stejnou identitu.
+
 ### Henk: most mezi HanzHubem a okolním světem
 
 Henk má znát **skutečně nasazené** aplikace a jejich možnosti: například REDcheck/Redmine, Meteo, IoT, InfoLCD a další služby. Jeho znalost neznamená pouze název projektu — zahrnuje účel, provozní stav, dostupná data, API, oprávněné akce a vazby na další systémy.
