@@ -92,6 +92,19 @@ Neznámé služby se **nepřiřazují odhadem**. Inventář nesmí veřejně vys
 
 **Hotovo:** ověřená mapa všech GPIO uživatelů na skutečném HUBu, detekce konfliktů napříč dvěma nezávislými aplikacemi, jednotné čitelné UI/API a bezpečně ověřená plánovaná změna bez porušení ostatních komponent.
 
+## Správa API, MCP serverů a SSH tunelů
+
+HanzHub 2.0 obsahuje **jednotný katalog a správu komunikačních rozhraní** napříč všemi aplikacemi. Je to součást centrálního inventáře, ne další izolovaný systém.
+
+- **API:** evidence REST/WebSocket endpointů a dalších rozhraní, služby/vlastníka, URL/routy, verze, dokumentace (např. OpenAPI), autentizace (pouze typ a reference na tajemství, nikdy tokeny), oprávnění, health, poslední ověření, závislosti a konzumenti. Kontrola kolizí cest/portů a změn kompatibility.
+- **MCP servery:** evidence MCP serverů, transportů a endpointů, poskytovaných tools/resources/prompts, oprávnění, klientů (Henk/ChatGPT/jiní agenti), dostupnosti a auditu volání. Zapnutí/vypnutí a změny konfigurace přes kontrolované oprávněné operace. Nikdy automaticky nezpřístupňovat neznámý MCP server externím klientům.
+- **SSH tunely:** katalog local/remote/dynamic forwardů, zdrojových a cílových hostů/portů, vlastníka, účelu, přístupových pravidel, stavu, expirace, automatického obnovení a revokace. Podpora **časově omezených přístupů** (např. na 4 hodiny) s ověřitelným otevřením, automatickým uzavřením a auditní stopou. Rozlišovat běžící sshd, lokální dostupnost a reálné vzdálené zpřístupnění.
+- **Vztahy:** jedna mapa *aplikace → proces/kontejner → port → API/MCP/tunel → konzument*, společná pro Dashboard a Henka. Živé ověření a datum pozorování vždy oddělené od deklarované konfigurace.
+- **Bezpečnost:** žádná veřejná expozice endpointů, otevření firewallu, tunelu ani zvýšení oprávnění bez explicitně autorizované změny. Tajemství ukládat ve vhodném secret store, nikoli v katalogu nebo Git repozitáři. Role a scope pro read-only diagnostiku versus změny.
+- **Dashboard:** seznam, vyhledávání, mapa vztahů, health, konflikty a audit. Henk z tohoto katalogu odpovídá na otázky typu „Které MCP servery běží?“, „Jaké API má REDcheck?“ či „Je SSH tunel stále otevřený?“ — bez hádání.
+
+**Akceptace:** inventura skutečných API/MCP/SSH vazeb na HUBu; funkční read-only přehled; ověřená diagnostika nedostupného endpointu; řízené otevření i automatické uzavření testovacího časově omezeného tunelu bez zásahu do ostatních služeb.
+
 ## Správa: hotové nástroje před vlastním frameworkem
 
 Uvažované nástroje (zatím **kandidáti, nikoliv zvolená nebo nasazená architektura**): Cockpit pro administraci Linuxu; Ansible a Semaphore UI pro opakovatelné operace; případně jiné osvědčené řešení. OpenJarvis lze nezávisle vyhodnotit jako lokální AI vrstvu.
