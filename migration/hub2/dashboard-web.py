@@ -115,11 +115,11 @@ class Dashboard(SimpleHTTPRequestHandler):
                 1,
             )
             html = html.replace(
-                "const storage = data.storage || {};",
-                "const storage = data.storage || {};"
+                "document.getElementById('backup-weekly-integrity').textContent =",
                 "if (typeof daily.size_bytes === 'number') "
                 "document.getElementById('backup-daily-integrity').textContent += "
-                "' · ' + (daily.size_bytes / 1073741824).toFixed(1) + ' GiB';",
+                "' · ' + (daily.size_bytes / 1073741824).toFixed(1) + ' GiB';"
+                "document.getElementById('backup-weekly-integrity').textContent =",
                 1,
             )
             self.send_content(html.encode(), "text/html; charset=utf-8")
