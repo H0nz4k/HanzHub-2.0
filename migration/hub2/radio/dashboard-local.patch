@@ -1,0 +1,65 @@
+--- a/dashboard-local.js
++++ b/dashboard-local.js
+@@ -79,62 +78,0 @@
+-  const station = document.querySelector('#radio-station');
+-  const audio = document.querySelector('#radio-audio');
+-  const play = document.querySelector('#radio-play');
+-  const stop = document.querySelector('#radio-stop');
+-  const status = document.querySelector('#radio-status');
+-  const config = await get('/api/radio/stations').catch(() => ({stations: []}));
+-  for (const item of config.stations) station.add(new Option(item.name, item.id));
+-  if (!station.options.length) {
+-    status.textContent = 'Stanice nejsou dostupné.';
+-    return;
+-  }
+-  const storedVolume = storage.get('hanzhub-radio-volume');
+-  audio.volume = storedVolume !== null && Number.isFinite(Number(storedVolume))
+-    ? Math.min(1, Math.max(0, Number(storedVolume))) : (config.volume ?? 40) / 100;
+-  audio.addEventListener('volumechange', () => storage.set('hanzhub-radio-volume', String(audio.volume)));
+-  let requested = false;
+-  let attempt = 0;
+-  const selected = () => config.stations.find(item => item.id === station.value);
+-  function reset() {
+-    requested = false;
+-    audio.pause();
+-    audio.removeAttribute('src');
+-    audio.load();
+-    stop.disabled = true;
+-    status.textContent = selected().name + ' · připraveno';
+-  }
+-  function connect() {
+-    const item = selected();
+-    const url = item.urls[attempt];
+-    if (!url) {
+-      reset();
+-      status.textContent = item.name + ' · stream se nepodařilo přehrát';
+-      return;
+-    }
+-    status.textContent = item.name + ' · připojování';
+-    audio.src = url;
+-    audio.play().catch(error => {
+-      if (error.name === 'NotAllowedError' && requested) {
+-        status.textContent = item.name + ' · spusť přehrávání ovladačem zvuku';
+-      }
+-    });
+-  }
+-  play.onclick = () => {
+-    attempt = 0;
+-    requested = true;
+-    stop.disabled = false;
+-    connect();
+-  };
+-  audio.addEventListener('error', () => {
+-    if (requested) {
+-      attempt += 1;
+-      connect();
+-    }
+-  });
+-  audio.addEventListener('playing', () => { status.textContent = selected().name + ' · přehrává se'; });
+-  audio.addEventListener('pause', () => {
+-    if (requested) status.textContent = selected().name + ' · pozastaveno';
+-  });
+-  stop.onclick = reset;
+-  station.onchange = reset;
+-  station.disabled = play.disabled = false;
+-  reset();

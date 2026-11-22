@@ -1,0 +1,121 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -11,2 +11,2 @@
+-from urllib.parse import urlsplit
+-from urllib.request import urlopen
++from urllib.parse import parse_qs, urlencode, urlsplit
++from urllib.request import Request, urlopen
+@@ -76,9 +76,36 @@
+-    <a class="button" href="http://127.0.0.1:4014/">FM a SDR předvolby</a></div>
+-  <article class="card panel"><h2>Internetové rádio</h2>
+-    <div class="feature-toolbar"><label for="radio-station">Stanice</label>
+-      <select id="radio-station" disabled></select>
+-      <button class="button primary" id="radio-play" disabled>Přehrát</button>
+-      <button class="button" id="radio-stop" disabled>Zastavit</button></div>
+-    <audio id="radio-audio" controls preload="none" aria-label="Přehrávač rádia"></audio>
+-    <p id="radio-status" class="muted" role="status">Načítám stanice…</p>
+-  </article>
++    <button class="button" id="radio-presets-jump" type="button">FM / SDR předvolby</button></div>
++  <div class="radio-layout">
++    <article class="card panel radio-player" aria-labelledby="radio-internet">
++      <h2 class="radio-kicker" id="radio-internet">Internetové rádio</h2>
++      <p id="radio-now" class="radio-track" role="status">Přehrávání je zastavené</p>
++      <p id="radio-status" class="muted" role="status">Načítám stanice…</p>
++      <label for="radio-station">Stanice</label>
++      <div class="radio-transport">
++        <select id="radio-station" disabled></select>
++        <button class="button primary" id="radio-play" disabled>Přehrát</button>
++        <button class="button" id="radio-stop" disabled>Zastavit</button>
++      </div>
++      <audio id="radio-audio" controls preload="none" aria-label="Přehrávač rádia"></audio>
++    </article>
++    <article class="card panel radio-presets" aria-labelledby="radio-fm">
++      <h2 id="radio-fm" tabindex="-1">FM / SDR předvolby</h2>
++      <p class="muted">Uložené frekvence přijímače</p>
++      <ul id="radio-presets"></ul>
++      <button class="button" id="radio-preset-new" type="button">Nová předvolba</button>
++      <form id="radio-preset-form" hidden>
++        <label for="radio-preset-name">Název</label>
++        <input id="radio-preset-name" maxlength="80" required>
++        <div class="radio-fields">
++          <div><label for="radio-preset-freq">Frekvence (MHz)</label>
++            <input id="radio-preset-freq" type="number" min="0.001" step="0.000001" inputmode="decimal" required></div>
++          <div><label for="radio-preset-mode">Modulace</label>
++            <select id="radio-preset-mode"><option value="wfm">WFM</option><option value="nfm">NFM</option><option value="am">AM</option></select></div>
++        </div>
++        <div class="radio-fields radio-save">
++          <button class="button primary" type="submit">Uložit předvolbu</button>
++          <button class="button" id="radio-preset-cancel" type="button">Zrušit</button>
++        </div>
++      </form>
++      <p class="muted" id="radio-preset-status" role="status">Načítám předvolby…</p>
++    </article>
++  </div>
+@@ -168,0 +196,4 @@
++    html = html.replace("</head>", '<link rel="stylesheet" href="/dashboard-radio.css">'
++                       '<script src="/dashboard-radio.js" defer></script></head>', 1)
++    html = html.replace("</head>", '<link rel="stylesheet" href="/dashboard-radio.css">'
++                       '<script src="/dashboard-radio.js" defer></script></head>', 1)
+@@ -192,0 +224,40 @@
++    def radio_presets(self):
++        host = self.headers.get("Host")
++        path = urlsplit(self.path)
++        match = re.fullmatch(r"/api/radio/presets(/(?:[1-9][0-9]{0,9}))?", path.path)
++        methods = {"GET", "HEAD", "POST"} if match and not match[1] else {"PATCH", "DELETE"}
++        if not match or path.query or self.command not in methods:
++            return self.send_content('{"detail":"Neplatná cesta předvolby."}'.encode(), "application/json", 404)
++        origins = self.headers.get_all("Origin") or []
++        write = self.command not in ("GET", "HEAD")
++        same_origin = origins in ([f"http://{host}"], [f"https://{host}"])
++        server_host, server_port = self.connection.getsockname()[:2]
++        allowed_hosts = {f"{server_host}:{server_port}"}
++        if ip_address(server_host).is_loopback:
++            allowed_hosts.add(f"localhost:{server_port}")
++        if (self.headers.get_all("Host") != [host] or host not in allowed_hosts or not self.local_data_allowed()
++                or ((origins or write) and not same_origin)
++                or (write and self.headers.get("Sec-Fetch-Site") not in (None, "same-origin"))):
++            return self.send_content('{"detail":"Přístup je omezen na místní Dashboard."}'.encode(), "application/json", 403)
++        body = None
++        if self.command in ("POST", "PATCH"):
++            lengths = self.headers.get_all("Content-Length") or []
++            if (len(lengths) != 1 or not re.fullmatch(r"[0-9]{1,5}", lengths[0])
++                    or not 0 < int(lengths[0]) <= 8192 or self.headers.get("Transfer-Encoding")
++                    or self.headers.get_content_type() != "application/json"):
++                return self.send_content('{"detail":"Neplatný formát předvolby."}'.encode(), "application/json", 400)
++            self.connection.settimeout(5)
++            body = self.rfile.read(int(lengths[0]))
++        try:
++            request = Request(origin(4014) + "/api/v1/presets" + (match[1] or ""), data=body,
++                              method="GET" if self.command == "HEAD" else self.command,
++                              headers={"Content-Type": "application/json"})
++            with urlopen(request, timeout=4) as response:
++                return self.send_content(response.read(262144), "application/json", response.status)
++        except HTTPError as exc:
++            return self.send_content(exc.read(8192), "application/json", exc.code)
++        except OSError:
++            return self.send_content('{"detail":"FM/SDR služba není dostupná."}'.encode(), "application/json", 503)
++
++    do_POST = do_PATCH = do_DELETE = radio_presets
++
+@@ -273 +344 @@
+-                         calendar=links["calendar"], radio=origin(4014) + "/")
++                         calendar=links["calendar"], radio="/living-glass/#radio")
+@@ -292,0 +364,18 @@
++        elif path in ("/dashboard-radio.js", "/dashboard-radio.css"):
++            content_type = "text/css" if path.endswith(".css") else "text/javascript"
++            resource = Path(__file__).with_name(path[1:])
++            return self.send_content(resource.read_bytes(), content_type + "; charset=utf-8")
++        elif path == "/api/radio/title":
++            params = parse_qs(urlsplit(self.path).query)
++            station = params.get("station", [""])[0]
++            stream = params.get("stream", [""])[0]
++            data = {"title": None}
++            if re.fullmatch(r"[a-zA-Z0-9_-]{1,32}", station) and re.fullmatch(r"[0-9]{1,2}", stream):
++                try:
++                    query = urlencode({"station": station, "stream": stream})
++                    with urlopen(origin(4020) + "/api/radio/title?" + query, timeout=2) as response:
++                        data = json.load(response)
++                except (OSError, ValueError):
++                    pass
++        elif path.startswith("/api/radio/presets"):
++            return self.radio_presets()
