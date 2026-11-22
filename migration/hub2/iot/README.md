@@ -28,3 +28,22 @@ odeber jen přidaný drop-in a restartuj IoT. Záloha SQLite je určena pro
 obnovu dat. Neobnovuj celou databázi přes novější změny.
 
 Zkouška bez zařízení je v `python3 -B check_iot_gateway.py`.
+
+## Ověření na HUB2
+
+Běží revize `99a1d197da8261edecc6c05aff260cee2ef87f2a`.
+Produkční API vrátilo čerstvý zapnutý stav registrované zásuvky eWeLink.
+Příkon zařízení neposkytlo. Původní panel BOT byl přidán z prověřené
+identity a dostupné konfigurace, ale ověření místního klíče selhalo.
+Stávající Tuya projekt při čtení klíče vrátil `28841002`
+(vypršelé cloudové předplatné). Panel je v UI nedostupný a jeho ovladače
+jsou zablokované.
+
+Chromium při 1440 a 390 px ověřilo zobrazení skutečných dat i úspěšný
+simulovaný výsledek povelu přes UI. Test gateway ověřil shodný původ,
+odmítnutí neplatné hodnoty a offline zařízení a kontrolu readbacku.
+Produkční pokusy s neplatným povelem skončily 403 a 400 před odesláním
+do IoT služby. Porovnání s konzistentní zálohou potvrdilo beze změny
+původní registraci a počet událostí ovládání. Fyzická zařízení nebyla
+přepnuta. Záloha a návrat jsou na HUB2 v root-only adresáři
+`/opt/hanzhub/.rollback-hub2-iot.Hn0Sip`.
