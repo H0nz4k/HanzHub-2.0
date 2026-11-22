@@ -1,0 +1,22 @@
+{
+  "volume": 25,
+  "stations": [
+    {
+      "id": "radio1",
+      "name": "Radio 1",
+      "urls": [
+        "https://stream.rcs.revma.com/stk8hrvb938uv",
+        "http://www.play.cz/radio/radio1-192.mp3.m3u"
+      ]
+    },
+    {
+      "id": "zun",
+      "name": "ZUN",
+      "urls": [
+        "https://stream.zunradio.cz/zun1.aac",
+        "https://stream.zunradio.cz/zun2.aac",
+        "https://stream.zunradio.cz/zun3.mp3"
+      ]
+    }
+  ]
+}
