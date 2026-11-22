@@ -32,3 +32,13 @@ Chromium přes Playwright na HUB2 ověřil navigaci, otevření REDchecku, obrá
 Po připojení původního Creative T60 přes USB byla na HUB2 aktivována jednotka `hanzhub-infolcd-radio.service`. Stávající dlaždice Rádio používá své původní místní API na portu 4020. Runtime pod `/opt/hanzhub/infolcd-radio/` využívá stanice a přehrávací smyčku původního HanzHubRadio. FFmpeg posílá zvuk přes ALSA na `plughw:CARD=T60,DEV=0`. Nastavení je v `/var/lib/hanzhub/infolcd-radio/state.json` a vychází z původního stavu. Změna hlasitosti či ztlumení znovu otevře stream s upravenou úrovní.
 
 Klient nativního InfoPanelu ověřil spuštění obou stanic, ztlumení a zastavení. ALSA u obou stanic hlásila `RUNNING` na Creative T60. HDMI InfoLCD zůstal v běhu bez restartu. FM stále nebylo možné ověřit bez SDR přijímače. Pro návrat stačí zastavit a vypnout novou jednotku rádia.
+
+## P0 | Nativní Living Glass a dotykové rádio
+
+Na HUB2 je aktivní nativní InfoLCD z větve [feat/native-living-glass](https://github.com/H0nz4k/InfoLcd/commit/f030bea7d29be3c796b2bf647faae8a60de8f9b6). Jde o 35 commitů nad dříve nasazeným `fix/native-studio-artwork`. Větev obsahuje kompaktní přepínač napájení, aktuální povrchy dlaždic, detail Henka a jeho animované efekty. Na HUB2 jsou všechna čtyři místa v každém ze tří řádků viditelná. Šest původních funkcí obsazuje šest pozic. Volné pozice jsou pouze obrysy bez dotykové akce. Vstupy, které závisejí na nepřipojené bráně, používají původní stav nedostupnosti.
+
+Nový runtime je v `/opt/hanzhub/infolcd-releases/f030bea`. Drop-in `production-native-living-glass.conf` pouze přepíná cestu existující HDMI jednotky. Pro reprodukci použij základ z původního soukromého stromu a aktualizované soubory z revize `f030bea` podle `native-living-glass.blobs`. Na připravené `lcd/` aplikuj `python3 -B migration/hub2/infolcd/apply-native-layout.py LCD_DIRECTORY` a přidej soubor `hdmi.py`. Kalibrace, konfigurační soubor a data se sdílejí s dřívějším runtime. Návrat spočívá v odebrání drop-inu, obnovení konfigurace systemd a restartu jen HDMI jednotky.
+
+Původní síťová pojistka zakazovala i ovládání internetového rádia. Adapter povoluje pouze POST play, stop, mute a volume na `127.0.0.1:4020` bez proxy či přesměrování. Ostatní síťové zápisy a fyzické výstupy zůstávají zablokované.
+
+Snímky živého `/dev/fb0` potvrdily 1024 × 600, mřížku, kompaktní přepínač, detail Henka i původní přehrávač na připojeném HDMI-A-1. Vstříknutí ověřovacích událostí do rozhraní skutečného digitizéru WaveShare ověřilo dlaždici Rádio, spuštění Radio 1, přepnutí na ZUN, hlasitost 25 → 30 → 25 a Stop. ALSA při obou stanicích potvrdila posun PCM na Creative T60. Po zastavení se PCM zavřelo. Ověření se týkalo HDMI framebufferu, dotykové cesty a zvukového zařízení.

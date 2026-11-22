@@ -4,9 +4,10 @@ from functools import partial
 import json
 from pathlib import Path
 import sys
+from urllib.parse import urlsplit
 import urllib.request
 
-ROOT = Path("/opt/hanzhub/infopanel")
+ROOT = Path(__file__).resolve().parent
 CONFIG = Path("/etc/hanzhub/infolcd/hdmi.json")
 SIZE = (1024, 600)
 KDSETMODE, KD_TEXT, KD_GRAPHICS = 0x4B3A, 0, 1
@@ -19,17 +20,31 @@ def main():
         raise SystemExit("Physical outputs must be disabled on HUB2 HDMI")
     sys.path.insert(0, str(ROOT / "lcd"))
 
-    # The original clients import urlopen. Limit this deployment to read requests
-    # before loading them, including actions against any later restored services.
+    # The HDMI viewer may send only the original internet-radio commands.
     upstream = urllib.request.urlopen
 
-    def read_only(url, data=None, *args, **kwargs):
-        if data is not None or (isinstance(url, urllib.request.Request)
-                                and url.get_method() not in ("GET", "HEAD")):
-            raise OSError("HUB2 InfoLCD: čtecí režim")
-        return upstream(url, None, *args, **kwargs)
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, *args, **kwargs):
+            return None
 
-    urllib.request.urlopen = read_only
+    radio = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    radio_paths = {
+        "/api/radio/play", "/api/radio/stop", "/api/radio/mute", "/api/radio/volume",
+    }
+
+    def restricted(url, data=None, *args, **kwargs):
+        method = url.get_method() if isinstance(url, urllib.request.Request) else "GET"
+        if data is None and method in ("GET", "HEAD"):
+            return upstream(url, None, *args, **kwargs)
+        if data is None and method == "POST":
+            parsed = urlsplit(url.full_url)
+            if (parsed.scheme, parsed.netloc) == ("http", "127.0.0.1:4020") and (
+                parsed.path in radio_paths and not parsed.query and not parsed.fragment
+            ):
+                return radio.open(url, None, *args, **kwargs)
+        raise OSError("HUB2 InfoLCD: nepovolený síťový povel")
+
+    urllib.request.urlopen = restricted
     import infopanel
     import infopanel_henk_task
 
