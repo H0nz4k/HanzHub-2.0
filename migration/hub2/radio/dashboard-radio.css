@@ -20,3 +20,5 @@
   .radio-transport { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .radio-transport select { grid-column: 1 / -1; }
 }
+
+body:has(#view-radio:not([hidden])) .top-actions :is(.prototype, #live-link) { display: none; }
