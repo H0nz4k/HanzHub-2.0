@@ -1,0 +1,27 @@
+--- dashboard-web.py
++++ dashboard-web.py
+@@ -117 +117 @@
+-def living_glass_home(demo=False):
++def living_glass_home(demo=False, remote=False):
+@@ -198,0 +199,9 @@
++    if not demo:
++        # Real pages must never paint fixture numbers, even before JS or on API failure.
++        html = re.sub(r'(<div class="stat-value">).*?(</div>)', r'\1—\2', html, flags=re.S)
++        html = re.sub(r'(<div class="stat-bottom">).*?(</div>)', r'\1Načítám skutečný stav…\2', html, flags=re.S)
++        html = re.sub(r'<div class="(?:segments|meter)"[^>]*>.*?</div>', '', html, flags=re.S)
++        html = re.sub(r'<svg class="sparkline"[^>]*>.*?</svg>', '', html, flags=re.S)
++        if remote:
++            html = html.replace("<body", '<body class="public-dashboard"', 1)
++            html = html.replace("</head>", '<style>body.public-dashboard .view:not(#view-dashboard) > :not(.pagehead):not(.public-data-notice){display:none!important}</style></head>', 1)
+@@ -203 +212 @@
+-    ).replace("</body>", '<script src="/dashboard-local.js"></script></body>', 1)
++    ).replace("</body>", '<script src="/dashboard-local.js?v=20261123"></script>' + ('<script src="/dashboard-public.js?v=20261123-final"></script>' if remote and not demo else '') + '</body>', 1)
+@@ -344 +353 @@
+-            self.send_content(living_glass_home(demo=urlsplit(self.path).query == "mode=demo").encode(), "text/html; charset=utf-8")
++            self.send_content(living_glass_home(demo=urlsplit(self.path).query == "mode=demo", remote=not self.local_data_allowed()).encode(), "text/html; charset=utf-8")
+@@ -367 +376 @@
+-        elif path in ("/dashboard-local.js", "/dashboard-live-sources.js"):
++        elif path in ("/dashboard-local.js", "/dashboard-live-sources.js", "/dashboard-public.js"):
+@@ -402 +411 @@
+-                ]}
++                ], "total": len(modules)}
