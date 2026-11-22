@@ -1,0 +1,23 @@
+[Unit]
+Description=Internet radio for native HanzHub InfoLCD
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=hanz
+SupplementaryGroups=audio
+StateDirectory=hanzhub/infolcd-radio
+StateDirectoryMode=0700
+Environment=RADIO_STATE=/var/lib/hanzhub/infolcd-radio/state.json
+ExecStart=/usr/bin/python3 -B /opt/hanzhub/infolcd-radio/radio-alsa.py
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+PrivateTmp=yes
+DevicePolicy=closed
+DeviceAllow=char-alsa rw
+
+[Install]
+WantedBy=multi-user.target

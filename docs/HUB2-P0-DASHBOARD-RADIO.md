@@ -26,3 +26,9 @@ Chromium přes Playwright na HUB2 ověřil navigaci, otevření REDchecku, obrá
 - Přehrání obou stanic v Chromium posunulo čas přes tři sekundy a zvýšilo počitadlo dekódovaných zvukových bajtů. Samostatný FFmpeg dekódoval oba zdroje do PCM s nenulovým signálem. Slyšitelnost na fyzickém reproduktoru zůstává neověřená.
 - Původní SDR aplikace Radioama běží na loopbacku 4014, zdrojová revize `9451de5`, jednotka `hanzhub-radio.service` a databáze `/var/lib/hanzhub/radio/hanzradio.sqlite`. Čtyři předvolby, jeden skenovací profil a nastavení stanice se funkčně shodují s archivem. Liší se pouze časy vytvoření a úprav. Databáze tedy zůstala na místě. Rádio nabízí přímý odkaz na skutečné ovládání Radioama.
 - SDR přijímač se při kontrole nehlásil přes USB a služba hlásila `OFFLINE`. Po připojení je potřeba ověřit identitu přijímače a zpřístupnění odpovídajícího zařízení jednotce, která teď používá `PrivateDevices=yes`, a pak ověřit FM na archivní předvolbě.
+
+## Rádio v nativním InfoPanelu
+
+Po připojení původního Creative T60 přes USB byla na HUB2 aktivována jednotka `hanzhub-infolcd-radio.service`. Stávající dlaždice Rádio používá své původní místní API na portu 4020. Runtime pod `/opt/hanzhub/infolcd-radio/` využívá stanice a přehrávací smyčku původního HanzHubRadio. FFmpeg posílá zvuk přes ALSA na `plughw:CARD=T60,DEV=0`. Nastavení je v `/var/lib/hanzhub/infolcd-radio/state.json` a vychází z původního stavu. Změna hlasitosti či ztlumení znovu otevře stream s upravenou úrovní.
+
+Klient nativního InfoPanelu ověřil spuštění obou stanic, ztlumení a zastavení. ALSA u obou stanic hlásila `RUNNING` na Creative T60. HDMI InfoLCD zůstal v běhu bez restartu. FM stále nebylo možné ověřit bez SDR přijímače. Pro návrat stačí zastavit a vypnout novou jednotku rádia.
