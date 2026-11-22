@@ -1,0 +1,13 @@
+.dashboard-iot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.dashboard-iot .panel { padding: clamp(16px, 2.2vw, 24px); }
+.dashboard-iot .cardhead { flex-wrap: wrap; }
+.dashboard-iot .cardhead + p { margin-block: 4px 10px; }
+.dashboard-iot-values { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; margin-block: 16px; font-size: var(--text-sm); }
+.dashboard-iot-values dt { color: var(--muted); }
+.dashboard-iot-values dd { margin: 0; }
+.dashboard-iot-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.dashboard-iot-control { display: flex; align-items: end; gap: 8px; }
+.dashboard-iot-control label { margin: 0; }
+.dashboard-iot-control input { width: 7rem !important; margin-top: 6px; }
+body:has(#view-iot:not([hidden]) .dashboard-iot) .top-actions #live-link { display: none; }
+@media (max-width: 850px) { .dashboard-iot-grid { grid-template-columns: 1fr; } }

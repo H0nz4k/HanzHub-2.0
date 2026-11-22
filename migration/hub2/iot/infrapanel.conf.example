@@ -1,0 +1,5 @@
+[Service]
+LoadCredential=tuya-devices:/opt/infrapanel/devices.json
+Environment=HANZHUB_IOT_DEVICES_FILE=%d/tuya-devices
+# The deployment must replace PANEL_IPV4 with the verified current address.
+IPAddressAllow=PANEL_IPV4/32

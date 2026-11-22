@@ -1,0 +1,64 @@
+--- a/dashboard-live-sources.js
++++ b/dashboard-live-sources.js
+@@ -30,8 +29,0 @@
+-  const iot = panel('iot');
+-  const deviceList = element('ul');
+-  const refresh = element('button', 'Obnovit stavy');
+-  refresh.className = 'button';
+-  refresh.type = 'button';
+-  iot.card.prepend(refresh);
+-  iot.card.append(deviceList);
+-
+@@ -71,44 +62,0 @@
+-  function describe(state) {
+-    if (state.paused) return 'Pozastaveno';
+-    if (state.online !== true) return 'Nedostupné';
+-    const values = ['Dostupné'];
+-    if (typeof state.power === 'boolean') values.push(state.power ? 'Zapnuto' : 'Vypnuto');
+-    if (Number.isFinite(state.current_temp_c)) values.push(state.current_temp_c + ' °C');
+-    if (Number.isFinite(state.target_temp_c)) values.push('Cíl ' + state.target_temp_c + ' °C');
+-    return values.join(' · ');
+-  }
+-
+-  async function loadIot(force = false) {
+-    if (refresh.disabled) return;
+-    refresh.disabled = true;
+-    iot.notice.textContent = 'Načítám stavy zařízení…';
+-    try {
+-      const {devices} = await read('/api/iot/devices', 'Registr IoT není dostupný.');
+-      const rows = await Promise.all(devices.map(async device => {
+-        const row = element('li');
+-        row.append(element('strong', [device.name, device.room].filter(Boolean).join(' · ')));
+-        const query = force ? '?fresh=1' : '';
+-        try {
+-          const {state} = await read('/api/iot/devices/' + encodeURIComponent(device.id) +
+-            '/state' + query, 'Stav se nepodařilo načíst.');
+-          row.append(element('p', describe(state)));
+-          if (state.checked_at) {
+-            const checked = new Date(state.checked_at);
+-            if (Number.isFinite(checked.getTime())) row.append(element('small', 'Ověřeno ' +
+-              checked.toLocaleTimeString('cs-CZ')));
+-          }
+-        } catch (error) {
+-          row.append(element('p', error.message));
+-        }
+-        return row;
+-      }));
+-      deviceList.replaceChildren(...rows);
+-      iot.notice.textContent = devices.length ? 'Registrovaná zařízení' : 'Žádné registrované zařízení.';
+-    } catch (error) {
+-      deviceList.replaceChildren();
+-      iot.notice.textContent = error.message;
+-    } finally {
+-      refresh.disabled = false;
+-    }
+-  }
+-
+@@ -118 +65,0 @@
+-    if (!iot.section.hidden) loadIot();
+@@ -121 +67,0 @@
+-  refresh.onclick = () => loadIot(true);
+@@ -124,3 +69,0 @@
+-  setInterval(() => {
+-    if (!document.hidden && !iot.section.hidden) loadIot();
+-  }, 30000);

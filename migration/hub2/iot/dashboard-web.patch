@@ -1,0 +1,38 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -12,0 +13 @@
++from dashboard_iot import COMMAND as IOT_COMMAND, command as iot_command, public_state
+@@ -44 +45 @@
+-    return {"calendar": "/calendar.html", "radioama": "/living-glass/#radio"}.get(key, origin(port) + path)
++    return {"calendar": "/calendar.html", "radioama": "/living-glass/#radio", "iot": "/living-glass/#iot"}.get(key, origin(port) + path)
+@@ -183,0 +185,2 @@
++            '<link rel="stylesheet" href="/dashboard-iot.css">'
++            '<script src="/dashboard-iot.js" defer></script>'
+@@ -198,2 +200,0 @@
+-    html = html.replace("</head>", '<link rel="stylesheet" href="/dashboard-radio.css">'
+-                       '<script src="/dashboard-radio.js" defer></script></head>', 1)
+@@ -262 +263,6 @@
+-    do_POST = do_PATCH = do_DELETE = radio_presets
++    def do_POST(self):
++        if IOT_COMMAND.fullmatch(self.path):
++            return iot_command(self, self.path)
++        return self.radio_presets()
++
++    do_PATCH = do_DELETE = radio_presets
+@@ -297,0 +304,4 @@
++        elif path in ("/dashboard-iot.js", "/dashboard-iot.css"):
++            media = "text/css" if path.endswith(".css") else "text/javascript"
++            return self.send_content(Path(__file__).with_name(path[1:]).read_bytes(),
++                                     media + "; charset=utf-8")
+@@ -312 +322 @@
+-                        {key: item[key] for key in ("id", "name", "room", "enabled")}
++                        {key: item[key] for key in ("id", "name", "room", "enabled", "capabilities")}
+@@ -316,4 +326 @@
+-                    state = payload["state"]
+-                    data = {"state": {key: state[key] for key in (
+-                        "online", "paused", "power", "checked_at", "current_temp_c", "target_temp_c"
+-                    ) if key in state}}
++                    data = {"state": public_state(payload["state"])}
+@@ -328 +335 @@
+-            self.send_header("Location", origin(4011) + "/")
++            self.send_header("Location", "/living-glass/#iot")
