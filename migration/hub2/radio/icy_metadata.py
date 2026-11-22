@@ -1,5 +1,6 @@
 """Bounded ICY title probes for configured internet stations."""
 from concurrent.futures import ThreadPoolExecutor
+from http.client import HTTPException
 import re
 from threading import Lock
 from time import monotonic
@@ -51,6 +52,6 @@ class Titles:
     def probe(url):
         try:
             title = read_title(url)
-        except (OSError, ValueError):
+        except (OSError, ValueError, HTTPException):
             title = None
         return title, monotonic()

@@ -21,6 +21,8 @@ class AlsaEngine(legacy.Engine):
     def snapshot(self):
         with self.cv:
             state = {**self.status, "stations": self.store.list()}
+            state["playing"] = bool(state["playing"] and not state["starting"]
+                                    and self.proc and self.proc.poll() is None)
             station = self.store.get(state["station_id"]) if state["playing"] else None
         state["title"] = None
         index = state["url_index"]
