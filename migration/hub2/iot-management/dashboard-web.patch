@@ -1,0 +1,19 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -13,0 +14 @@
++from dashboard_iot_management import PREFIX as IOT_MANAGEMENT, management as iot_management
+@@ -274,0 +276,2 @@
++        if self.path.startswith(IOT_MANAGEMENT + "/"):
++            return iot_management(self)
+@@ -279 +282,7 @@
+-    do_PATCH = do_DELETE = radio_presets
++    def do_PUT(self):
++        return iot_management(self) if self.path.startswith(IOT_MANAGEMENT + "/") else self.send_error(404)
++
++    def do_DELETE(self):
++        return iot_management(self) if self.path.startswith(IOT_MANAGEMENT + "/") else self.radio_presets()
++
++    do_PATCH = radio_presets
+@@ -285,0 +295,2 @@
++        if path.startswith(IOT_MANAGEMENT + "/"):
++            return iot_management(self)

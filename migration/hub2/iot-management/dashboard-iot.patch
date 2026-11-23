@@ -1,0 +1,5 @@
+--- a/dashboard-iot.js
++++ b/dashboard-iot.js
+@@ -8 +8 @@
+-  panel.innerHTML = '<div class="feature-toolbar"><button class="button" type="button">Obnovit stav</button><p class="muted" role="status"></p></div><div class="dashboard-iot-grid"></div>';
++  panel.innerHTML = '<div class="feature-toolbar"><button class="button" type="button">Obnovit stav</button><a class="button primary" href="/iot-sprava/">Správa modulů a nastavení</a><p class="muted" role="status"></p></div><div class="dashboard-iot-grid"></div>';
