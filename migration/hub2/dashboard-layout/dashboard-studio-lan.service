@@ -1,0 +1,11 @@
+[Unit]
+Description=LAN access to the static Henk Studio
+Requires=hanzhub-henk-studio.service
+After=hanzhub-henk-studio.service
+
+[Service]
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd 127.0.0.1:4002
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict

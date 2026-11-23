@@ -1,0 +1,22 @@
+--- a/hdmi.py
++++ b/hdmi.py
+@@ -7,0 +8 @@
++from zoneinfo import ZoneInfo
+@@ -48,0 +50 @@
++    from datetime import datetime
+@@ -49,0 +52,15 @@
++
++    # Legacy receiver CSV timestamps follow the receiver host timezone.
++    parse_meteo_line = infopanel._try_parse_line
++    source_zone = ZoneInfo("Europe/London")
++
++    def meteo_line(line):
++        sample = parse_meteo_line(line)
++        if sample and isinstance(sample.get("ts"), datetime):
++            stamp = sample["ts"]
++            if stamp.tzinfo is None:
++                stamp = stamp.replace(tzinfo=source_zone)
++            sample["ts"] = stamp.astimezone()
++        return sample
++
++    infopanel._try_parse_line = meteo_line

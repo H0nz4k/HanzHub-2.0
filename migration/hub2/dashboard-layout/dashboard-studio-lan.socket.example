@@ -1,0 +1,7 @@
+[Socket]
+ListenStream=HUB_LAN_IP:4002
+IPAddressDeny=any
+IPAddressAllow=HUB_LAN_SUBNET
+
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,33 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -12,0 +13 @@
++from dashboard_host_settings import settings as host_settings
+@@ -46 +47,8 @@
+-    return {"calendar": "/calendar.html", "radioama": "/living-glass/#radio", "iot": "/living-glass/#iot", "meteo": "/living-glass/#meteo"}.get(key, origin(port) + path)
++    internal = {"calendar": "/calendar.html", "radioama": "/living-glass/#radio",
++                "iot": "/living-glass/#iot", "meteo": "/living-glass/#meteo"}
++    if key in internal:
++        return internal[key]
++    lan = os.environ.get("HANZHUB_LAN_HOST")
++    if key == "henkstudio" and lan:
++        return f"http://{lan}:{port}{path}"
++    return "/living-glass/#settings?ports=1"
+@@ -147 +155 @@
+-        "https://meteo.hanzhub.cz/": origin(5000) + "/",
++        "https://meteo.hanzhub.cz/": "/living-glass/#meteo",
+@@ -169 +177 @@
+-                '<svg aria-hidden="true"><use href="#server"/></svg>Codex</a>'
++                '<svg aria-hidden="true"><use href="#server"/></svg>Codex<span class="nav-end amber">AI</span></a>'
+@@ -200,0 +209,3 @@
++        html = re.sub(r'<a href="#dashboard" class="navlink" data-page="dashboard">.*?</a>', "", html, count=1)
++        html = html.replace("</head>", '<link rel="stylesheet" href="/dashboard-host-settings.css">'
++                            '<script src="/dashboard-host-settings.js" defer></script></head>', 1)
+@@ -280,0 +292,2 @@
++        if self.path == "/api/dashboard/host-settings":
++            return host_settings(self, SERVICES)
+@@ -393,0 +407,5 @@
++        elif path == "/api/dashboard/host-settings" and self.path == path:
++            return host_settings(self, SERVICES)
++        elif path in ("/dashboard-host-settings.js", "/dashboard-host-settings.css"):
++            media = "text/css" if path.endswith(".css") else "text/javascript"
++            return self.send_content(Path(__file__).with_name(path[1:]).read_bytes(), media + "; charset=utf-8")

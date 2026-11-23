@@ -1,0 +1,8 @@
+--- a/infopanel_studio.py
++++ b/infopanel_studio.py
+@@ -153,3 +153,2 @@
+-        from infopanel_system import age_label
+-        metric(c,rect,fmt(data.get('temp'),1),'°C',age_label(data.get('age_seconds'))+(' · starší data' if stale else ''),AMBER if stale else WHITE)
+-        sparkline(c,(r-130,y+101,r-18,b-13),model.get('meteo_history') or [])
++        stamp = data.get('last_label') or 'Bez dat'
++        metric(c,rect,fmt(data.get('temp'),1),'°C',stamp+(' · starší' if stale and stamp != 'Bez dat' else ''),AMBER if stale else WHITE)
