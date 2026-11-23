@@ -1,0 +1,11 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -196,6 +196,8 @@
+             '<script src="/dashboard-live-sources.js"></script></body>',
+             1,
+         )
++    if not demo and not remote:
++        html = html.replace("</head>", '<style>.top-actions .demo-pill{display:none!important}</style></head>', 1)
+     if not demo:
+         # Real pages must never paint fixture numbers, even before JS or on API failure.
+         html = re.sub(r'(<div class="stat-value">).*?(</div>)', r'\1—\2', html, flags=re.S)
