@@ -1,0 +1,27 @@
+--- a/dashboard-web.py
++++ b/dashboard-web.py
+@@ -46 +46 @@
+-    return {"calendar": "/calendar.html", "radioama": "/living-glass/#radio", "iot": "/living-glass/#iot"}.get(key, origin(port) + path)
++    return {"calendar": "/calendar.html", "radioama": "/living-glass/#radio", "iot": "/living-glass/#iot", "meteo": "/living-glass/#meteo"}.get(key, origin(port) + path)
+@@ -200,0 +201,5 @@
++        html = html.replace("</head>", '<style>#view-meteo>.pagehead>a,#view-meteo>:not(.pagehead):not(.hub2-meteo){display:none!important}'
++                           '.hub2-meteo .meteo-period{margin:16px 0}.hub2-meteo .history-scroll{overflow:auto}'
++                           '.hub2-meteo table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}'
++                           '.hub2-meteo :is(td,th){text-align:left;padding:8px;border-bottom:1px solid var(--line)}'
++                           '</style><script src="/dashboard-meteo.js" defer></script></head>', 1)
+@@ -388,0 +394,15 @@
++        elif path in ("/api/dashboard/meteo/current", "/api/dashboard/meteo/history"):
++            if not self.local_data_allowed() or self.headers.get("Cf-Access-Jwt-Assertion"):
++                return self.send_content(b'{"error":"local_network_required"}', "application/json", 403)
++            query = urlsplit(self.path).query
++            history = path.endswith("/history")
++            if (history and not re.fullmatch(r"range=(1h|6h|24h|7d|30d)", query)) or (not history and query):
++                return self.send_content(b'{"error":"invalid_query"}', "application/json", 400)
++            try:
++                with urlopen(origin(5000) + ("/api/history?" + query if history else "/api/current"), timeout=8) as response:
++                    data = json.load(response)
++            except (OSError, ValueError):
++                return self.send_content(b'{"error":"meteo_unavailable"}', "application/json", 503)
++        elif path == "/dashboard-meteo.js":
++            script = Path(__file__).with_name("dashboard-meteo.js")
++            return self.send_content(script.read_bytes(), "text/javascript; charset=utf-8")

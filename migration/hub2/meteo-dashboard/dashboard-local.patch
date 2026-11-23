@@ -1,0 +1,16 @@
+--- a/dashboard-local.js
++++ b/dashboard-local.js
+@@ -57 +57 @@
+-    const [health, backup, iot] = await Promise.all([
++    const [health, backup, iot, meteo] = await Promise.all([
+@@ -60,0 +61 @@
++      document.body.classList.contains('public-dashboard') ? null : get('/api/dashboard/meteo/current').catch(() => null),
+@@ -75 +76,7 @@
+-    setStat(3, info('meteo'), '');
++    const temp = meteo?.temp;
++    if (document.body.classList.contains('public-dashboard')) setStat(3, info('meteo'), '');
++    else if (Number.isFinite(temp?.value) && Number.isFinite(Date.parse(temp.time))) {
++      const stale = Date.now() - Date.parse(temp.time) > 30 * 60000;
++      setStat(3, temp.value.toLocaleString('cs', {maximumFractionDigits: 1}) + ' °C',
++        (stale ? 'Poslední měření · starší údaj' : 'Měřeno') + ' · ' + new Date(temp.time).toLocaleString('cs'));
++    } else setStat(3, '—', 'Měření není dostupné');
